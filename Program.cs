@@ -4,54 +4,85 @@ class HypergeometricDistributionCalculator
 {
     static void Main()
     {
-        Console.WriteLine("Hypergeometric Distribution Calculator");
-        Console.Write("Enter the total number of possible outcomes: ");
-        int totalOutcomes = int.Parse(Console.ReadLine());
-
-        Console.Write("\nEnter the number of attempts: ");
-        int totalAttempts = int.Parse(Console.ReadLine());
-
-        Console.Write("\nEnter the number of different success categories: ");
-        int numCategories = int.Parse(Console.ReadLine());
-
-        int[] successesInCategories = new int[numCategories];
-        int[] desiredSuccessesInCategories = new int[numCategories];
-
-        for (int i = 0; i < numCategories; i++)
+        try
         {
-            Console.Write($"\nEnter the number of successes in category {i + 1}: ");
-            successesInCategories[i] = int.Parse(Console.ReadLine());
+            Console.WriteLine("Hypergeometric Distribution Calculator");
+            int totalOutcomes = GetValidIntegerInput("Enter the total number of possible outcomes: ");
 
-            Console.Write($"\nEnter the number of desired successes in category {i + 1}: ");
-            desiredSuccessesInCategories[i] = int.Parse(Console.ReadLine());
+            int totalAttempts = GetValidIntegerInput("\nEnter the number of attempts: ");
+
+            int numCategories = GetValidIntegerInput("\nEnter the number of different success categories: ");
+
+            int[] successesInCategories = new int[numCategories];
+            int[] desiredSuccessesInCategories = new int[numCategories];
+
+            for (int i = 0; i < numCategories; i++)
+            {
+                successesInCategories[i] = GetValidIntegerInput($"\nEnter the number of successes in category {i + 1}: ");
+
+                desiredSuccessesInCategories[i] = GetValidIntegerInput($"\nEnter the number of desired successes in category {i + 1}: ");
+            }
+
+            double[] allOddsExact = new double[numCategories];
+            double[] allOddsOrBetter = new double[numCategories];
+            double exactlyDesiredSuccesses = 1.0;
+            double atLeastDesiredSuccesses = 1.0;
+
+            for (int i = 0; i < numCategories; i++)
+            {
+                allOddsExact[i] = CalculateExactlyDesiredSuccesses(totalOutcomes - i, totalAttempts - i, successesInCategories[i], desiredSuccessesInCategories[i]);
+                allOddsOrBetter[i] = CalculateAtLeastDesiredSuccesses(totalOutcomes - i, totalAttempts - i, successesInCategories[i], desiredSuccessesInCategories[i]);
+            }
+
+            foreach (double odds in allOddsExact)
+            {
+                exactlyDesiredSuccesses *= odds;
+            }
+
+            foreach (double odds in allOddsOrBetter)
+            {
+                atLeastDesiredSuccesses *= odds;
+            }
+
+            double notDesiredSuccesses = 1 - atLeastDesiredSuccesses;
+
+            Console.WriteLine($"\nOdds of getting at least the desired outcome or better: {atLeastDesiredSuccesses * 100:F2}%");
+            Console.WriteLine($"Odds of getting exactly the desired outcome: {exactlyDesiredSuccesses * 100:F2}%");
+            Console.WriteLine($"Odds of not getting the desired outcome: {notDesiredSuccesses * 100:F2}%");
+        } 
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+        finally
+        {
+            Console.WriteLine("Press enter to close...");
+            Console.ReadLine();
         }
 
-        double[] allOddsExact = new double[numCategories];
-        double[] allOddsOrBetter = new double[numCategories];
-        double exactlyDesiredSuccesses = 1.0;
-        double atLeastDesiredSuccesses = 1.0;
+    }
 
-        for (int i = 0; i < numCategories; i++)
+    static int GetValidIntegerInput(string prompt)
+    {
+        int result;
+        bool validInput = false;
+
+        do
         {
-            allOddsExact[i] = CalculateExactlyDesiredSuccesses(totalOutcomes - i, totalAttempts - i, successesInCategories[i], desiredSuccessesInCategories[i]);
-            allOddsOrBetter[i] = CalculateAtLeastDesiredSuccesses(totalOutcomes - i, totalAttempts - i, successesInCategories[i], desiredSuccessesInCategories[i]);
-        }
+            Console.Write(prompt);
+            string input = Console.ReadLine();
 
-        foreach(double odds in allOddsExact)
-        {
-            exactlyDesiredSuccesses *= odds;
-        }
+            if (int.TryParse(input, out result))
+            {
+                validInput = true;
+            }
+            else
+            {
+                Console.WriteLine("Invalid input. Please enter a valid integer.");
+            }
+        } while (!validInput);
 
-        foreach (double odds in allOddsOrBetter)
-        {
-            atLeastDesiredSuccesses *= odds;
-        }
-
-        double notDesiredSuccesses = 1 - atLeastDesiredSuccesses;
-
-        Console.WriteLine($"\nOdds of getting at least the desired outcome or better: {atLeastDesiredSuccesses * 100:F2}%");
-        Console.WriteLine($"Odds of getting exactly the desired outcome: {exactlyDesiredSuccesses * 100:F2}%");
-        Console.WriteLine($"Odds of not getting the desired outcome: {notDesiredSuccesses * 100:F2}%");
+        return result;
     }
 
     static double CalculateAtLeastDesiredSuccesses(int totalOutcomes, int totalAttempts, int successes, int desiredSuccesses)
