@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "3oIcPrTBKFlDZgW3UCzXhNqKn2hOoUu2ZUnonbGJjkixw/qe2UH64DXAer9cFfb4nUzDBL/swURS9/M18kIrcg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\marcel.ihle\\Documents\\My Tools\\HypergeometricDistributionCalculator\\HypergeometricDistributionCalculator\\HypergeometricDistributionCalculator.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1803",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "You are running the 'restore' operation with an 'HTTP' source, 'http://192.168.1.16/GKL.Nuget.Server/nuget/'. Non-HTTPS access will be removed in a future version. Consider migrating to an 'HTTPS' source."
+    }
+  ]
+}
